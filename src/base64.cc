@@ -6,23 +6,58 @@
 
 */
 
-// it is a bit silly to pull in all of libsasl just for base64
-// this should either be rewritten or replaced with the openssl code
+// url + filename safe encoding
+static const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-extern "C" {
-#include <sasl/saslutil.h>
-}
 
 void
 base64_encode(const char *src, int slen, char *dst, int dlen){
     unsigned int l;
 
-    // punt
-    sasl_encode64(src, slen, dst, dlen, &l );
+    // make sure dst is terminated on empty input
+    if( dlen ) *dst = 0;
 
-    // remove trailing =s for perl compat
-    while( l && dst[l-1] == '=' ){
-        dst[--l] = 0;
+    while(slen){
+        unsigned int e=0;
+        int il=slen>3 ? 3 : slen;
+        slen -= il;
+
+        if( dlen < 5 ) return;
+
+        switch(il){
+        case 3:
+            e |= (*src++) << 16;
+            // fall thru
+        case 2:
+            e |= (*src++) << ((4 - il)<<3);
+            // fall thru
+        case 1:
+            e |= (*src++) << ((3 - il)<<3);
+            break;
+        }
+
+        // output chars
+        *dst++ = charset[ (e>>18) & 0x3f ];
+        *dst++ = charset[ (e>>12) & 0x3f ];
+
+        if(il > 1 ){
+            *dst++ = charset[ (e>> 6) & 0x3f ];
+            if( il > 2 )
+                *dst++ = charset[ (e    ) & 0x3f ];
+        }
+
+        // output padding
+        switch(il){
+        case 1:
+            *dst++ = '=';
+            // fall thru
+        case 2:
+            *dst++ = '=';
+            break;
+        }
+
+        *dst = 0;
+        dlen -= 4;
     }
 }
 
