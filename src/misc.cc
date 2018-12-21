@@ -23,7 +23,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/loadavg.h>
+#include <sys/stat.h>
+//#include <sys/loadavg.h>
 
 extern void base64_encode(const char *, int, char *, int);
 extern int job_nrunning(void);
@@ -81,5 +82,33 @@ current_load(void){
     getloadavg( load, 3 );
 
     return (int)(load[1] * 1000) + job_nrunning() * 100;
+}
+
+int
+mkdirp(const char *path, mode_t mode){
+    char buf[PATH_MAX];
+    int r;
+
+    r = mkdir(path, mode);
+
+    if( r == 0 ) return 0; 		// created. done.
+    if( errno == EEXIST ) return 0; 	// already exists. done.
+
+    const char *pe = path;
+    while(1){
+        const char *s = strchr(pe+1, '/');
+        if( !s )    break; // no more slashes
+        if( !s[1] ) break; // path ends with slash
+        strncpy(buf, path, s - path);
+        buf[s-path] = 0;
+        pe = s;
+
+        r = mkdir(buf, mode);
+        if( r && (errno != EEXIST) ) return -1;
+    }
+
+    r = mkdir(path, mode);
+    if( r && (errno != EEXIST) ) return -1;
+    return 0;
 }
 
