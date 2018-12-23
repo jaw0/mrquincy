@@ -28,7 +28,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <libgen.h>
-
+#include <sys/stat.h>
 
 // RSN - config
 #define CATPROG		"/usr/bin/cat"
@@ -44,12 +44,8 @@ void
 pipeline_init(void){
 
     // create a tmp directory for sort
-    snprintf(sort_tmp, sizeof(sort_tmp), "%s/mrtmp", config->basedir.c_str());
-    int e = mkdir( sort_tmp, 0777 );
-    chmod( sort_tmp, 0777 );
-
     snprintf(sort_tmp, sizeof(sort_tmp), "%s/mrtmp/sort", config->basedir.c_str());
-    e = mkdir( sort_tmp, 0777 );
+    int e = mkdirp( sort_tmp, 0777 );
     chmod( sort_tmp, 0777 );
 
     if( e && errno != EEXIST ){
