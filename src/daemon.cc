@@ -141,7 +141,7 @@ daemonize(int to, const char *name, int argc, char **argv){
     fprintf(pf, "%d\n", getpid());
     fprintf(pf, "#");
 
-    for(i=1;i<argc;i++){
+    for(i=0;i<argc;i++){
         fprintf(pf, " %s", argv[i]);
     }
     fprintf(pf, "\n");
