@@ -15,11 +15,15 @@ OBJS =  lock.o diag.o misc.o config.o daemon.o thread.o network.o \
 # OBJS += alloc.o
 
 # import site-wide compiler options
-include ../../Makefile.inc
+#include ../../Makefile.inc
+CC=gcc
+CCC=g++
 
-CFLAGS = -g $(FLAGS) -O3 -ffast-math -pthreads -I. -I`pwd`/../inc  -I/usr/local/include -I/usr/sfw/include -I$(LOCALDIR)/include
+CFLAGS = -g $(FLAGS) -O3 -ffast-math -pthread -I. -I`pwd`/../inc  -I/usr/local/include -I$(LOCALDIR)/include
 CCFLAGS=$(CFLAGS)
-LDFLAGS = -L$(LOCALDIR)/lib -L/usr/sfw/lib/amd64 -lprotobuf -lpthread -lrt -lsocket -lnsl -lgen -lssl -lcrypto -lsasl -lz -lsendfile
+CPPFLAGS=$(CFLAGS)
+LDFLAGS = -L$(LOCALDIR)/lib -lprotobuf -lpthread -lz -lssl -lcrypto
+# -L/usr/sfw/lib/amd64 -lprotobuf -lpthread -lrt -lsocket -lnsl -lgen -lssl -lcrypto -lsasl -lz -lsendfile
 PCC=protoc
 CVT=../../../tools/proto2pl
 
@@ -41,5 +45,5 @@ realclean:
 %.o:%.proto
 	$(PCC) --proto_path=. --cpp_out=. $<
 	$(CCC) $(CFLAGS) -c -o $*.o $*.pb.cc
-	$(CVT) $< ../lib/AC/MrQuincy/proto/$*.pl
+	# $(CVT) $< ../lib/AC/MrQuincy/proto/$*.pl
 

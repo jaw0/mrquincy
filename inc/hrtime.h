@@ -8,6 +8,7 @@
 #ifndef __mrquincy_hrtime_h_
 #define __mrquincy_hrtime_h_
 
+#include <time.h>
 #include <sys/time.h>
 
 #ifndef HAVE_HRTIME

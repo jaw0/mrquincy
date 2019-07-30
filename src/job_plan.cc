@@ -29,6 +29,7 @@
 #include <strings.h>
 #include <signal.h>
 #include <poll.h>
+#include <sys/wait.h>
 
 #include <sstream>
 #include <algorithm>

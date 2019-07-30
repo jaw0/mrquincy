@@ -20,6 +20,7 @@
 #include "std_reply.pb.h"
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <poll.h>
 #include <sys/socket.h>
 #include <signal.h>

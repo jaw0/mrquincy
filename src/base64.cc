@@ -11,7 +11,7 @@ static const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
 
 
 void
-base64_encode(const char *src, int slen, char *dst, int dlen){
+base64_encode(const unsigned char *src, int slen, char *dst, int dlen){
     unsigned int l;
 
     // make sure dst is terminated on empty input
