@@ -60,7 +60,7 @@ diag_init(void){
     gethostname(hostname, sizeof(hostname));
 
     // RSN - make configurable
-    openlog( MYNAME, LOG_NDELAY|LOG_PID, LOG_LOCAL4);
+    openlog( MYNAME, LOG_NDELAY|LOG_PID, LOG_LOCAL2);
 }
 
 

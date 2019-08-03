@@ -37,7 +37,6 @@
 #include <arpa/inet.h>
 #include <sys/resource.h>
 #include <sys/statvfs.h>
-#include <sys/loadavg.h>
 #include <sys/sendfile.h>
 
 

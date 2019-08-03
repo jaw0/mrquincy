@@ -23,7 +23,6 @@
 #include <arpa/inet.h>
 #include <sys/resource.h>
 #include <sys/statvfs.h>
-#include <sys/loadavg.h>
 
 #include "std_ipport.pb.h"
 #include "mrmagoo.pb.h"

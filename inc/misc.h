@@ -10,7 +10,10 @@
 #define __mrquincy_misc_h_
 
 #include <stdlib.h>
+
+#ifdef __SUNPRO_CC
 #include <atomic.h>
+#endif
 
 #define ELEMENTSIN(T) (sizeof(T)/sizeof(T[0]))
 
@@ -24,18 +27,18 @@ inline int probability(float p){ return random() < p * 0x7FFFFFFF; }
 
 
 // use solaris atomic_ops if we have them
-#if 0
-#  define ATOMIC_SET32(a,b)		((a)  = (b))
-#  define ATOMIC_SET64(a,b)		((a)  = (b))
-#  define ATOMIC_SETPTR(a,b)		((a)  = (b))
-#  define ATOMIC_ADD32(a,b)		((a) += (b))
-#  define ATOMIC_ADD64(a,b)		((a) += (b))
-#else
+#ifdef __SUNPRO_CC
 #  define ATOMIC_SET32(a,b)		atomic_swap_32( (uint32_t*)&a, b )
 #  define ATOMIC_SET64(a,b)		atomic_swap_64( (uint64_t*)&a, b )
 #  define ATOMIC_SETPTR(a,b)		atomic_swap_ptr( &a, b)
 #  define ATOMIC_ADD32(a,b)		atomic_add_32(  (uint32_t*)&a, b )
 #  define ATOMIC_ADD64(a,b)		atomic_add_64(  (uint64_t*)&a, b )
+#else
+#  define ATOMIC_SET32(a,b)		((a)  = (b))
+#  define ATOMIC_SET64(a,b)		((a)  = (b))
+#  define ATOMIC_SETPTR(a,b)		((a)  = (b))
+#  define ATOMIC_ADD32(a,b)		((a) += (b))
+#  define ATOMIC_ADD64(a,b)		((a) += (b))
 #endif
 
 

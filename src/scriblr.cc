@@ -135,6 +135,7 @@ scriblr_save_file(int fd, const string *filename, int size, string *hash, int to
     string tmp = file;
     tmp.append(".tmp");
 
+    DEBUG("tmp file: '%s'", tmp.c_str());
     FILE *f = fopen( tmp.c_str(), "w" );
     if( !f ){
         PROBLEM("cannot save file %s: %s", tmp.c_str(), strerror(errno));
@@ -166,6 +167,8 @@ scriblr_save_file(int fd, const string *filename, int size, string *hash, int to
     else
         buf[0] = 0;
 
+    DEBUG("size %d", vfysz);
+    
     if( vfysz != size || hash->compare(buf) ){
         VERBOSE("verify failed %s, %d %s != %d %s", tmp.c_str(), size, hash->c_str(), vfysz, buf);
         unlink( tmp.c_str() );
@@ -175,6 +178,7 @@ scriblr_save_file(int fd, const string *filename, int size, string *hash, int to
     // copy out hash
     hash->assign( buf );
 
+    DEBUG("rename %s -> %s", tmp.c_str(), file.c_str() );
     rename( tmp.c_str(), file.c_str() );
 
     return 1;

@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 
-extern void base64_encode(const char *, int, char *, int);
+extern void base64_encode(const unsigned char *, int, char *, int);
 
 void
 HashSHA1::_init(void){
@@ -72,7 +72,7 @@ void
 HashSHA1::digest64(char *d, int len){
 
     _digest();
-    base64_encode(_hash, 20, d, len);
+    base64_encode((const unsigned char*)_hash, 20, d, len);
 }
 
 
