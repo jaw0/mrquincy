@@ -37,8 +37,9 @@
 #include <arpa/inet.h>
 #include <sys/resource.h>
 #include <sys/statvfs.h>
-#include <sys/sendfile.h>
-
+#ifndef __NetBSD__
+#  include <sys/sendfile.h>
+#endif
 
 #define READ_TIMEOUT	30
 #define WRITE_TIMEOUT	30
@@ -252,6 +253,22 @@ sendfile_to(int dst, int src, int len, int to){
     struct pollfd pf[1];
     off_t off = 0;
 
+#ifdef __NetBSD__
+    int writ = 0;
+    char buf[8192];
+    while( writ != len ){
+        int s = len - writ;
+        if( s > sizeof(buf) ) s = sizeof(buf);
+
+        int r = read_to(src, buf, s, to);
+        DEBUG("read %d -> %d", s, r);
+        if( r<1 ) break;
+        write_to(dst, buf, 1, r);
+        writ += r;
+    }
+    return writ;
+
+#else
     while( off != len ){
         pf[0].fd = dst;
         pf[0].events = POLLOUT;
@@ -272,8 +289,9 @@ sendfile_to(int dst, int src, int len, int to){
             if( s < 1 ) return -1;
         }
     }
-
     return off;
+#endif
+
 }
 
 void

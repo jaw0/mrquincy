@@ -38,7 +38,6 @@
 #include <arpa/inet.h>
 #include <sys/resource.h>
 #include <sys/statvfs.h>
-#include <sys/sendfile.h>
 #include <strings.h>
 
 extern int udp4_fd, udp6_fd;
