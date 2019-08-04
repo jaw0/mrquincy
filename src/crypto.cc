@@ -11,6 +11,7 @@
 #include "diag.h"
 #include "config.h"
 #include "crypto.h"
+#include "misc.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -70,7 +71,7 @@ void
 HashSHA1::digest64(char *d, int len){
 
     _digest();
-    base64_encode((const unsigned char*)_hash, 20, d, len);
+    base64_encode((const char*)_hash, 20, d, len);
 }
 
 
