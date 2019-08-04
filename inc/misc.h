@@ -45,6 +45,8 @@ inline int probability(float p){ return random() < p * 0x7FFFFFFF; }
 
 extern int current_load(void);
 extern int mkdirp(const char *path, mode_t mode);
+extern void base64_encode(const char *, int, char *, int);
+
 
 
 #endif // __mrquincy_misc_h_

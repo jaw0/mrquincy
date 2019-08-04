@@ -16,8 +16,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern void base64_encode(const unsigned char *, int, char *, int);
-
 void
 HashSHA1::_init(void){
     SHA1_Init( &_ctx );

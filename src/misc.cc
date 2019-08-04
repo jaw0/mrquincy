@@ -26,7 +26,6 @@
 #include <sys/stat.h>
 //#include <sys/loadavg.h>
 
-extern void base64_encode(const unsigned char *, int, char *, int);
 extern int job_nrunning(void);
 
 static Mutex lock;
@@ -53,7 +52,7 @@ unique(string *dst){
     g.n = seqno ++;
     lock.unlock();
 
-    base64_encode((const unsigned char*)&g, sizeof(g), buf, sizeof(buf));
+    base64_encode((const char*)&g, sizeof(g), buf, sizeof(buf));
 
     // safe encode: / => _
     for(int i=0; i<sizeof(buf); i++){
