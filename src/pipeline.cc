@@ -31,9 +31,8 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-// RSN - config
-#define CATPROG		"/usr/bin/cat"
-#define GZCATPROG	"/usr/bin/gzcat"
+// override in config file
+#define GZCATPROG	"/bin/zcat"
 #define SORTPROG	"/usr/bin/sort"
 
 
@@ -178,12 +177,12 @@ Pipeline::Pipeline(const ACPMRMTaskCreate *g, int* outfds){
 
     if( !g->phase().compare("map") ){
         // gzcat files
-        e1 = GZCATPROG;
+        e1 = config->gzcat_prog.empty() ? GZCATPROG : config->gzcat_prog.c_str();
         pinterm[1] = pprogin[1];
     }else{
         // gzcat files | sort
-        e1 = GZCATPROG;
-        e2 = SORTPROG;
+        e1 = config->gzcat_prog.empty() ? GZCATPROG : config->gzcat_prog.c_str();
+        e2 = config->sort_prog.empty()  ? SORTPROG  : config->sort_prog.c_str();
 
         if( pipe(pinterm) ) _fail( "pipe failed");
     }

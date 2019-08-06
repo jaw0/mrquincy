@@ -77,6 +77,8 @@ SET_STR_VAL(basedir);
 SET_STR_VAL(error_mailto);
 SET_STR_VAL(error_mailfrom);
 SET_STR_VAL(plan_prog);
+SET_STR_VAL(gzcat_prog);
+SET_STR_VAL(sort_prog);
 
 static struct {
     const char *word;
@@ -100,6 +102,8 @@ static struct {
     { "seedpeer",	add_peer 	   },
     { "syslog",		ignore_conf        },	// NYI
     { "planprog",	set_plan_prog      },
+    { "gzcatprog",	set_gzcat_prog     },
+    { "sortprog",	set_sort_prog      },
     // ...
 };
 

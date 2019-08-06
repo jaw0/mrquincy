@@ -55,6 +55,8 @@ public:
     string		error_mailto;
     string		error_mailfrom;
     string		plan_prog;
+    string		gzcat_prog;
+    string		sort_prog;
 
     int check_acl(const sockaddr *);
 protected:

@@ -388,7 +388,7 @@ setup_process(int need){
 
     // all signals -> abort
     for(int i=1; i<32; i++){
-        if( i == 18 ) continue;		// sig child
+        if( i == SIGCHLD ) continue;
         install_handler(i, run_task_sig);
     }
 
