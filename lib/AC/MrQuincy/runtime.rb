@@ -27,8 +27,8 @@ module MrQuincy
     end
 
     def filter(data)
-      return if data[:time] < conf[:start]
-      return if data[:time] >= conf[:end]
+      #return if data[:time] < @conf[:start]
+      #return if data[:time] >= @conf[:end]
       return true
     end
 
@@ -92,7 +92,7 @@ module MrQuincy
       curr, @curr = @curr, nil
       yield curr if curr
 
-      @io.read { |line|
+      @io.each { |line|
         data = JSON.parse line, {symbolize_names: true}
         yield data
       }

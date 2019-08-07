@@ -69,7 +69,7 @@ if( keys %conf ){
 }
 
 # parse the job
-my $mrm = AC::MrQuincy::Client->new( 'ruby', file => $ARGV[0] );
+my $mrm = AC::MrQuincy::Client->new( 'perl', file => $ARGV[0] );
 $mrm->set_debug(1) if $opt{debug};
 $mrm->set_master(  $opt{master} )  if $opt{master};
 

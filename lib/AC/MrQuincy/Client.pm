@@ -40,6 +40,7 @@ sub new {
 
     # let file specify a lang in the config section
     $lang = $mrp->{content}{config}{lang} || $lang;
+    $mrp->{lang} = $lang;
 
     return bless {
         lang	=> $lang,

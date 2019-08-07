@@ -164,7 +164,7 @@ sub compile_map {
         $loop .= "def readinput (data)\n$prog->{readinput}{code}\nend\n";
     }
 
-    $loop .= "  \$stdin.read { |data|\n";
+    $loop .= "  \$stdin.each { |data|\n";
 
     if( $comp->config('lineinput', $sec) ){
         # read text line by line
@@ -223,14 +223,15 @@ sub compile_final {
 
     my $loop = <<'EOW';
 
-    $stdin.read { |line|
-      o = program JSON.parse( line, {symbolize_names: true} )
+    $stdin.each { |line|
+      d = JSON.parse( line, {symbolize_names: true} )
+      o = program *d
       $R.output *o if o
     }
 EOW
     ;
 
-    return compile_common($comp, $prog, $sec, 'final', $loop, '(key, value)');
+    return compile_common($comp, $prog, $sec, 'final', $loop, '(key, data)');
 }
 
 sub syntax_check {
