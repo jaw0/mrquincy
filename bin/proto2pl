@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+# -*- perl -*-
+
+# Copyright (c) 2008 by Jeff Weisberg
+# Author: Jeff Weisberg <jaw @ tcp4me.com>
+# Created: 2008-Dec-15 19:38 (EST)
+# Function: 
+#
+# $Id$
+
+
+# usage: proto2pl input.proto output.pl
+
+use Google::ProtocolBuffers;
+use strict;
+
+my($in, $out) = @ARGV;
+die "input file not specified\n"  unless $in;
+die "output file not specified\n" unless $out;
+
+
+Google::ProtocolBuffers->parsefile( $in, {
+    generate_code               => $out,
+    create_accessors            => 1,
+    follow_best_practice        => 1 ,
+} );
+
