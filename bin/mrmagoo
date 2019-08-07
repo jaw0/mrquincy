@@ -36,8 +36,8 @@ BEGIN {
            "man",
           ) || exit;
 
-    my $devlib = $ENV{MRDEVLIB} || "$ENV{HOME}/dev/mrquincy/lib";
-    $libdir = $opt{devlibs} ? $devlib : '/home/adcopy/lib';
+    my $devlib = $ENV{MRDEVLIB} || "$ENV{HOME}/dev/deduce/lib";
+    $libdir = $opt{devlibs} ? $devlib : '/home/deduce/lib';
     unshift @INC, $libdir;
 };
 

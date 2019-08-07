@@ -244,7 +244,6 @@ sub syntax_check {
 
     open(my $tmp, '>', $file);
     print $tmp $code;
-    print $code;
     close $tmp;
 
     my $ruby = $comp->{rubybin} || $RUBYBIN;
