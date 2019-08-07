@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 # -*- perl -*-
 
 # Copyright (c) 2010 by Jeff Weisberg
@@ -7,6 +7,7 @@
 # Function: grep data
 
 my %opt;
+my $libdir;
 use Getopt::Long qw(:config no_ignore_case);
 use Pod::Usage;
 BEGIN {
@@ -27,23 +28,31 @@ BEGIN {
            "progress",
           ) || exit;
 
-    my $devlib = $ENV{ACDEVLIB} || "$ENV{HOME}/dev/adcopy/lib";
-    unshift @INC, ($opt{devlibs} ? $devlib : '/home/adcopy/lib');
+    my $devlib = $ENV{MRDEVLIB} || "$ENV{HOME}/dev/mrquincy/lib";
+    $libdir = $opt{devlibs} ? $devlib : '/home/adcopy/lib';
+    unshift @INC, $libdir;
 };
 
 # ARGV: param=value | param=/regex/ [...]
 
 use AC::MrQuincy::Client;
-use AC::Puzzles;
 use AC::ISOTime;
+use AC::MrQuincy::ServerFile;
+use AC::Dumper;
 use strict;
+
+my $SERVERFILE = '/var/run/ybservers';
 
 # determine config from cmdline
 $opt{range} ||= 1;	# 1 day
 $opt{console} = 1;
-$opt{format} ||= 'log';
+$opt{format} ||= 'json';
+
 conf_time( \%opt, 'end',    int($^T / 86400) * 86400);		# today @ T00:00Z
 conf_time( \%opt, 'start',  $opt{end} - $opt{range} * 86400 );
+
+$opt{start} = isotime($opt{start});
+$opt{end}   = isotime($opt{end});
 
 my $mrm;
 my %conf;
@@ -62,7 +71,7 @@ if( $opt{faster} ){
 
     # job compiler config
     %conf = (
-        libdir	=> ($opt{devlibs} ? "$ENV{HOME}/dev/adcopy/lib" : '/home/adcopy/lib'),
+        libdir	=> $libdir,
         runinit	=> 1,
     );
 }
@@ -77,6 +86,7 @@ $concf{report}   = sub{ print STDERR "@_\n" } if $opt{report};
 $concf{progress} = sub{ print STDERR "@_\n" } if $opt{progress};
 
 $mrm->compile( \%opt, %conf );
+print STDERR dumper($mrm->{job}), "\n" if $opt{debug};
 
 $mrm->open_console();
 
@@ -93,7 +103,7 @@ exit;
 ################################################################
 
 sub seedlist {
-    [ map { "$_->{addr}:$_->{port}" } get_ac_servers( ($opt{mrmode} || 'prod'), 'mrquincy' ) ];
+    [ map { $_->{Addr} } get_ac_servers( $SERVERFILE, ($opt{mrmode} || 'prod'), 'mrquincy' ) ];
 }
 
 sub conf_time {
@@ -119,6 +129,7 @@ sub mkgrep {
 #!/bin/sh
 
 grep @ARGV
+exit 0
 </%map>
 EOJOB
     ;
@@ -165,7 +176,6 @@ sub mkjob {
     }
     return <<EOJOB;
 <%common>
-    use AC::Logfile;
     use AC::Dumper;
     use JSON;
     $col

@@ -15,7 +15,7 @@ use strict;
 our @EXPORT = 'compile_perl';
 
 # defaults, may be overridden in Compile->new
-my $PERLBIN	= '/usr/local/bin/perl';
+my $PERLBIN	= $^X;
 my $LIBDIR	= '/home/adcopy/lib';
 
 sub compile_perl {
@@ -76,7 +76,6 @@ sub boilerplate {
 
     $code .= <<EOBP;
 use AC::MrQuincy::Runtime;
-use AC::Logfile;
 use JSON;
 use strict;
 
@@ -181,8 +180,8 @@ sub compile_map {
                 $loop = $code . $loop . "\t" . 'next unless filterinput( $d );' . "\n";
             }
         }else{
-            $loop .= "\t" . '$d = parse_dancr_log( $d );' . "\n";
-            $loop .= "\t" . 'next unless $R->filter(  $d );' . "\n";
+            $loop .= "\t" . '$d = decode_json( $d );' . "\n";
+            # $loop .= "\t" . 'next unless $R->filter(  $d );' . "\n";
         }
     }
 
@@ -248,6 +247,7 @@ sub syntax_check {
     my $name = shift;
     my $code = shift;
 
+    return if $comp->{no_syntax_check};
     my $file = "/tmp/mrjob.$$";
 
     open(my $tmp, '>', $file);
@@ -256,10 +256,10 @@ sub syntax_check {
 
     my $perl = $comp->{perlbin} || $PERLBIN;
 
-    my $errs;
-    my $pid = open3($errs, $errs, $errs, $perl, '-c', $file);
+    my $pid = open3(undef, \*CHLD_OUT, undef,  $perl, '-c', $file);
+
     my $out;
-    while(<$errs>){ $out .= $_ }
+    while(<CHLD_OUT>){ $out .= $_ }
     waitpid( $pid, 0 );
     my $status = $?;
     unlink $tmp;

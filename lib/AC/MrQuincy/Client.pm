@@ -13,7 +13,6 @@ use AC::MrQuincy::Submit::Parse;
 use AC::MrQuincy::Client::Console;
 use AC::DC::Debug;
 use AC::Daemon;
-use AC::Conf;
 use AC::Misc;
 use AC::Protocol;
 use AC::DC::IO;
@@ -39,6 +38,8 @@ sub new {
     # parse job
     my $mrp = AC::MrQuincy::Submit::Parse->new( $from => $src, lang => $lang );
 
+    # let file specify a lang in the config section
+    $lang = $mrp->{content}{config}{lang} || $lang;
 
     return bless {
         lang	=> $lang,

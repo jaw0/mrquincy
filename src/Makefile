@@ -25,7 +25,7 @@ CPPFLAGS=$(CFLAGS)
 LDFLAGS = -L$(LOCALDIR)/lib -lprotobuf -lpthread -lz -lssl -lcrypto
 # -L/usr/sfw/lib/amd64 -lprotobuf -lpthread -lrt -lsocket -lnsl -lgen -lssl -lcrypto -lsasl -lz -lsendfile
 PCC=protoc
-CVT=../../../tools/proto2pl
+CVT=../bin/proto2pl
 
 all: mrquincyd
 
@@ -45,5 +45,5 @@ realclean:
 %.o:%.proto
 	$(PCC) --proto_path=. --cpp_out=. $<
 	$(CCC) $(CFLAGS) -c -o $*.o $*.pb.cc
-	# $(CVT) $< ../lib/AC/MrQuincy/proto/$*.pl
+	$(CVT) $< ../lib/AC/MrQuincy/proto/$*.pl
 

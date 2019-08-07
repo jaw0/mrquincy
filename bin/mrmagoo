@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 # -*- perl -*-
 
 # Copyright (c) 2010 by Jeff Weisberg
@@ -8,6 +8,7 @@
 
 my %opt;
 my %conf;
+my $libdir;
 use Getopt::Long qw(:config no_ignore_case);
 use Pod::Usage;
 BEGIN {
@@ -35,15 +36,18 @@ BEGIN {
            "man",
           ) || exit;
 
-    my $devlib = $ENV{ACDEVLIB} || "$ENV{HOME}/dev/adcopy/lib";
-    unshift @INC, ($opt{devlibs} ? $devlib : '/home/adcopy/lib');
+    my $devlib = $ENV{MRDEVLIB} || "$ENV{HOME}/dev/mrquincy/lib";
+    $libdir = $opt{devlibs} ? $devlib : '/home/adcopy/lib';
+    unshift @INC, $libdir;
 };
 
 use AC::MrQuincy::Client;
-use AC::Puzzles;
+use AC::MrQuincy::ServerFile;
 use AC::ISOTime;
 use AC::Dumper;
 use strict;
+
+my $SERVERFILE = '/var/run/ybservers';
 
 pod2usage(-exitstatus => 0, -verbose => 2) if $opt{man};
 pod2usage(1) if $opt{help} or not $ARGV[0];
@@ -52,6 +56,9 @@ pod2usage(1) if $opt{help} or not $ARGV[0];
 $opt{range} ||= 1;	# 1 day
 conf_time( \%opt, 'end',    int($^T / 86400) * 86400);		# today @ T00:00Z
 conf_time( \%opt, 'start',  $opt{end} - $opt{range} * 86400 );
+
+$opt{start} = isotime($opt{start});
+$opt{end}   = isotime($opt{end});
 
 # merge -conf params
 # eg. maxrun, tasktimeout, taskwidth - to control the job, or other - available to job
@@ -62,13 +69,13 @@ if( keys %conf ){
 }
 
 # parse the job
-my $mrm = AC::MrQuincy::Client->new( 'perl', file => $ARGV[0] );
+my $mrm = AC::MrQuincy::Client->new( 'ruby', file => $ARGV[0] );
 $mrm->set_debug(1) if $opt{debug};
 $mrm->set_master(  $opt{master} )  if $opt{master};
 
 # job compiler config
 my %conf = (
-    libdir	=> ($opt{devlibs} ? "$ENV{HOME}/dev/adcopy/lib" : '/home/adcopy/lib'),
+    libdir	=> $libdir,
     runinit	=> (!$opt{check}),
    );
 
@@ -104,7 +111,7 @@ exit;
 ################################################################
 
 sub seedlist {
-    [ map { "$_->{addr}:$_->{port}" } get_ac_servers( ($opt{mrmode} || 'prod'), 'mrquincy' ) ];
+    [ map { $_->{Addr} } get_ac_servers( $SERVERFILE, ($opt{mrmode} || 'prod'), 'mrquincy' ) ];
 }
 
 sub conf_time {

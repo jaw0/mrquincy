@@ -56,8 +56,8 @@ sub filter {
     my $me = shift;
     my $d  = shift;
 
-    return if $d->{tstart} <  $me->{conf}{start};
-    return if $d->{tstart} >= $me->{conf}{end};
+    return if $d->{time} lt $me->{conf}{start};
+    return if $d->{time} ge $me->{conf}{end};
     return 1;
 }
 
