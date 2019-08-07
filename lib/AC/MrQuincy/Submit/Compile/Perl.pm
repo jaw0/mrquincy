@@ -262,7 +262,7 @@ sub syntax_check {
     while(<CHLD_OUT>){ $out .= $_ }
     waitpid( $pid, 0 );
     my $status = $?;
-    unlink $tmp;
+    unlink $file;
 
     if( $status ){
         print STDERR "syntax error checking section $name\n";
