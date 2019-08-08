@@ -29,13 +29,12 @@ sub compile_ruby {
     $comp->{confjs}   = encode_json( $comp->{config} );
 
     # compile + run init section
-    # if( $comp->{runinit} && $prog->{init} ){
-    #     my $init = compile_init( $comp, $prog );
-    #     my $code = $init->{src};
-    #     my $r = eval $code;
-    #     die if $@;
-    #     $comp->{initjs} = encode_json($r) if $r;
-    # }
+    if( $comp->{runinit} && $prog->{init} ){
+        my $init = compile_init( $comp, $prog );
+        my $code = $init->{src};
+        my $r = run_ruby( $comp, $code );
+        $comp->{initjs} = encode_json($r) if $r;
+    }
 
     $comp->{initjs} ||= encode_json({});
 
@@ -89,14 +88,17 @@ sub compile_init {
     my $uniq = "$$\_$^T\_" . int(rand(0xffff));
 
     $code .= <<EOCONF;
-\$R = begin
+begin
   conf = JSON.parse(<<'__END_OF_CONFIG_$uniq\__', {symbolize_names: true})
 $comp->{confjs}
 __END_OF_CONFIG_$uniq\__
-  MrQuincy::Runtime.new conf, nil
 end
 
+res = begin
 $sec->{code}
+end
+
+print res.to_json
 
 EOCONF
     ;
@@ -232,6 +234,23 @@ EOW
     ;
 
     return compile_common($comp, $prog, $sec, 'final', $loop, '(key, data)');
+}
+
+sub run_ruby {
+    my $comp = shift;
+    my $code = shift;
+
+    my $ruby = $comp->{rubybin} || $RUBYBIN;
+    my $file = "/tmp/mrjobinit.$$";
+
+    open(my $tmp, '>', $file);
+    print $tmp $code;
+    close $tmp;
+
+    my $res = `$ruby $file`;
+    unlink $file;
+    die "init block failed\n" if $?;
+    return $res;
 }
 
 sub syntax_check {
