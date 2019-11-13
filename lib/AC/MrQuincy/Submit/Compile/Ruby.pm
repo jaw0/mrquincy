@@ -138,7 +138,7 @@ EOCOMMON
     ;
 
     $code .= $sec->{init} if $sec->{init};
-    $code .= "\ndef program $argl\n$sec->{code}\nreturn\nend\n";
+    $code .= "\nprogram = lambda do $argl\n$sec->{code}\nreturn\nend\n";
     $code .= $loop;
     $code .= $sec->{cleanup} if $sec->{cleanup};
 
@@ -186,13 +186,13 @@ sub compile_map {
     }
 
     $loop .= <<'EOW';
-    key, data = program data
+    key, data = program.call data
     $R.output key, data unless key.nil?
   }
 EOW
     ;
 
-    return compile_common($comp, $prog, $sec, 'map', $loop, '(data)');
+    return compile_common($comp, $prog, $sec, 'map', $loop, '|data|');
 }
 
 sub compile_reduce {
@@ -206,14 +206,14 @@ sub compile_reduce {
     begin
       iter = MrQuincy::Iter.new $stdin
       iter.each_key { |k|
-        key, data = program k, iter
+        key, data = program.call k, iter
         $R.output key, data unless key.nil?
       }
     end
 EOW
     ;
 
-    return compile_common($comp, $prog, $sec, "reduce/$nred", $loop, '(key, iter)');
+    return compile_common($comp, $prog, $sec, "reduce/$nred", $loop, '|key, iter|');
 }
 
 
@@ -227,13 +227,13 @@ sub compile_final {
 
     $stdin.each { |line|
       d = JSON.parse( line, {symbolize_names: true} )
-      o = program *d
+      o = program.call *d
       $R.output *o if o
     }
 EOW
     ;
 
-    return compile_common($comp, $prog, $sec, 'final', $loop, '(key, data)');
+    return compile_common($comp, $prog, $sec, 'final', $loop, '|key, data|');
 }
 
 sub run_ruby {
